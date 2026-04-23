@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dowry Calculator | वर-वधु प्रोफाइल</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto 30px;
+            flex-wrap: wrap;
+        }
+
+        .frame {
+            flex: 1;
+            min-width: 400px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+        }
+
+        .groom-frame::before { background: linear-gradient(90deg, #e74c3c, #f39c12, #27ae60); }
+        .bride-frame::before { background: linear-gradient(90deg, #e91e63, #9c27b0, #00bcd4); }
+
+        .frame-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #333;
+            position: relative;
+        }
+
+        .frame-title::after {
+            content: '✨';
+            position: absolute;
+            font-size: 2rem;
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .groom-title::after { right: -40px; top: -10px; }
+        .bride-title::after { left: -40px; top: -10px; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .slider-container {
+            margin: 10px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .slider-value {
+            text-align: center;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-top: 8px;
+            font-size: 1.1rem;
+        }
+
+        .sarkari-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .sarkari-checkbox:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .sarkari-checkbox input[type="checkbox"] {
+            transform: scale(1.5);
+            accent-color: #fff;
+        }
+
+        .calculate-section {
+            text-align: center;
+            margin: 30px auto;
+            padding: 30px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-width: 600px;
+        }
+
+        .calculate-btn {
+            padding: 20px 50px;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(231, 76, 60, 0.6);
+        }
+
+        /* Results Section */
+        .results {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            display: none;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-header h2 {
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .result-label {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .result-value {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        .total-result {
+            border-top: 4px solid #e74c3c;
+            padding-top: 25px;
+            margin-top: 20px;
+        }
+
+        .total-value {
+            font-size: 2.5rem !important;
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .frame {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>👰‍♀️ वर-वधु प्रोफाइल 💍</h1>
+        <p>Fill details to calculate perfect dowry amount</p>
+    </div>
+
+    <div class="main-container">
+        <!-- GROOM SIDE -->
+        <div class="frame groom-frame">
+            <h2 class="frame-title groom-title">🤵 वर पक्ष (Groom Side)</h2>
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Enter Groom's Name" id="groomName">
+            </div>
+
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" min="18" max="60" value="28" id="groomAge">
+            </div>
+
+            <div class="form-group">
+                <label>Education Level</label>
+                <select id="groomEducation">
+                    <option value="1">12th Pass</option>
+                    <option value="2">Diploma</option>
+                    <option value="3">B.Tech/B.E.</option>
+                    <option value="4">MBA</option>
+                    <option value="5">M.Tech</option>
+                    <option value="6">Doctorate</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Career</label>
+                <select id="groomCareer" onchange="updateInstitutes()">
+                    <option value="1">Private Job</option>
+                    <option value="2">Government Job</option>
+                    <option value="3">Business</option>
+                    <option value="4">IT Professional</option>
+                    <option value="5">Doctor</option>
+                    <option value="6">Engineer</option>
+                    <option value="7">Defense</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Degree Institute</label>
+                <select id="groomInstitute">
+                    <option value="1">Local College</option>
+                    <option value="2">State University</option>
+                    <option value="3">Aatu Jh@tu College 😂</option>
+                    <option value="4">NIT</option>
+                    <option value="5">IIT Bombay</option>
+                    <option value="6">IIT Delhi</option>
+                    <option value="7">IIT Madras</option>
+                    <option value="8">IIT Kanpur</option>
+                    <option value="9">IIM Ahmedabad</option>
+                    <option value="10">IIM Bangalore</option>
+                    <option value="11">IIM Calcutta</option>
+                    <option value="12">NDA Pune</option>
+                    <option value="13">IMA Dehradun</option>
+                    <option value="14">OTA Chennai</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Monthly Salary (₹)</label>
+                <select id="groomSalary">
+                    <option value="15000">15,000</option>
+                    <option value="25000">25,000</option>
+                    <option value="40000">40,000</option>
+                    <option value="60000">60,000</option>
+                    <option value="85000">85,000</option>
+                    <option value="100000">1 Lakh</option>
+                    <option value="125000">1.25 Lakh</option>
+                </select>
+            </div>
+
+            <div class="sarkari-checkbox">
+                <input type="checkbox" id="sarkariNaukri">
+                <label for="sarkariNaukri">🔥 GAME CHANGER: S@KARI NAUKRI 🔥</label>
+            </div>
+
+            <div class="form-group">
+                <label>Handsome Level</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="handsomeSlider" min="1" max="10" value="5">
+                    <div class="slider-value" id="handsomeValue">Average (5/10) 😊</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BRIDE SIDE -->
+        <div class="frame bride-frame">
+            <h2 class="frame-title bride-title">👰‍♀️ वधु पक्ष (Bride Side)</h2>
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" placeholder="Enter Bride's Name" id="brideName">
+            </div>
+
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" min="18" max="40" value="25" id="brideAge">
+            </div>
+
+            <div class="form-group">
+                <label>Education</label>
+                <select id="brideEducation">
+                    <option value="1">12th Pass</option>
+                    <option value="2">Graduate</option>
+                    <option value="3" selected>Post Graduate</option>
+                    <option value="4">Professional Degree</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Profession</label>
+                <select id="brideProfession">
+                    <option value="1">Housewife</option>
+                    <option value="2">Private Job</option>
+                    <option value="3">Government Job</option>
+                    <option value="4">Business</option>
+                    <option value="5">Doctor</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Family Status</label>
+                <select id="familyStatus">
+                    <option value="1">Middle Class</option>
+                    <option value="2">Upper Middle</option>
+                    <option value="3">Rich</option>
+                    <option value="4">Business Family</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALCULATE BUTTON -->
+    <div class="calculate-section">
+        <button class="calculate-btn" onclick="calculateDowry()">
+            💰 CALCULATE DOWRY 💰
+        </button>
+    </div>
+
+    <!-- RESULTS SECTION -->
+    <div class="results" id="resultsSection">
+        <div class="result-header">
+            <h2>🎉 FINAL DOWRY CALCULATION 🎉</h2>
+            <p id="groomBrideNames"></p>
+        </div>
+
+        <div class="result-item">
+            <span class="result-label">💼 Groom Salary Base</span>
+            <span class="result-value" id="salaryBase">₹0</span>
+        </div>
+
+        <div class="result-item">
+            <span class="result-label">🎓 Education Premium</span>
+            <span class="result-value" id="educationPremium">₹0</span>
+        </div>
+
+        <div class="result-item">
+            <span class="result-label">🏫 IIT/IIM Multiplier</span>
+            <span class="result-value" id="instituteBonus">₹0</span>
+        </div>
+
+        <div class="result-item">
+            <span class="result-label">🔥 Sarkari Naukri Bonus</span>
+            <span class="result-value" id="sarkariBonus">₹0</span>
+        </div>
+
+        <div class="result-item">
+            <span class="result-label">😍 Handsome Level Bonus</span>
+            <span class="result-value" id="handsomeBonus">₹0</span>
+        </div>
+
+        <div class="result-item">
+            <span class="result-label">👰‍♀️ Bride Factors</span>
+            <span class="result-value" id="brideFactors">₹0</span>
+        </div>
+
+        <div class="result-item total-result">
+            <span class="result-label">💰 TOTAL DOWRY AMOUNT</span>
+            <span class="result-value total-value" id="totalDowry">₹0</span>
+        </div>
+    </div>
+
+    <script>
+        // Handsome slider update
+        const handsomeSlider = document.getElementById('handsomeSlider');
+        const handsomeValue = document.getElementById('handsomeValue');
+        const handsomeLevels = ['😭', '😢', '😐', '🙂', '😊', '😎', '🤩', '😍', '🥰', '💎'];
+        
+        handsomeSlider.addEventListener('input', function() {
+            const value = this.value;
+            handsomeValue.innerHTML = `Level ${value}/10 ${handsomeLevels[value-1]}`;
+        });
+
+        // Update institutes based on career
+        function updateInstitutes() {
+            const career = document.getElementById('groomCareer').value;
+            // This could filter institutes based on career, but keeping all for now
+        }
+
+               // Main Calculation Function
+        function calculateDowry() {
+            // Get all values
+            const groomName = document.getElementById('groomName').value || 'Groom Ji';
+            const brideName = document.getElementById('brideName').value || 'Bride Ji';
+            const groomSalary = parseInt(document.getElementById('groomSalary').value) || 0;
+            const groomEducation = parseInt(document.getElementById('groomEducation').value);
+            const groomInstitute = parseInt(document.getElementById('groomInstitute').value);
+            const sarkariNaukri = document.getElementById('sarkariNaukri').checked;
+            const handsomeLevel = parseInt(document.getElementById('handsomeSlider').value);
+            const brideEducation = parseInt(document.getElementById('brideEducation').value);
+            const familyStatus = parseInt(document.getElementById('familyStatus').value);
+            const groomAge = parseInt(document.getElementById('groomAge').value) || 28;
+            const brideAge = parseInt(document.getElementById('brideAge').value) || 25;
+
+            // Calculation Logic
+            let baseAmount = groomSalary * 24 * 0.75; // 18 months salary as base (75%)
+            
+            // Education Premium (Groom)
+            const educationPremium = groomEducation * 500000;
+            
+            // IIT/IIM/Top Institute Bonus
+            let instituteBonus = 0;
+            if (groomInstitute >= 5 && groomInstitute <= 14) { // IITs, IIMs, NDA etc.
+                instituteBonus = groomSalary * 12 * 2; // 24 months extra for top institutes
+            } else if (groomInstitute === 3) { // Aatu Jh@tu College penalty
+                instituteBonus = -200000;
+            }
+
+            // Sarkari Naukri Bonus
+            const sarkariBonus = sarkariNaukri ? groomSalary * 36 : 0; // 36 months bonus!
+
+            // Handsome Level Bonus
+            const handsomeBonus = handsomeLevel * 100000;
+
+            // Bride Factors
+            const bridePremium = brideEducation * 300000;
+            const familyPremium = familyStatus * 400000;
+            const ageAdjustment = (groomAge > 30 ? 500000 : 0) + (brideAge < 24 ? 200000 : 0);
+            
+            const brideFactors = bridePremium + familyPremium + ageAdjustment;
+
+            // TOTAL DOWRY
+            const totalDowry = Math.floor(
+                baseAmount + educationPremium + instituteBonus + sarkariBonus + 
+                handsomeBonus + brideFactors
+            );
+
+            // Update Results Display
+            document.getElementById('groomBrideNames').textContent = 
+                `${groomName} ✨ ${brideName}`;
+
+            document.getElementById('salaryBase').textContent = 
+                `₹${baseAmount.toLocaleString()}`;
+
+            document.getElementById('educationPremium').textContent = 
+                `₹${educationPremium.toLocaleString()}`;
+
+            document.getElementById('instituteBonus').textContent = 
+                `₹${instituteBonus.toLocaleString()}`;
+
+            document.getElementById('sarkariBonus').textContent = 
+                sarkariNaukri ? `₹${sarkariBonus.toLocaleString()}` : `₹0`;
+
+            document.getElementById('handsomeBonus').textContent = 
+                `₹${handsomeBonus.toLocaleString()}`;
+
+            document.getElementById('brideFactors').textContent = 
+                `₹${brideFactors.toLocaleString()}`;
+
+            document.getElementById('totalDowry').textContent = 
+                `₹${totalDowry.toLocaleString()}`;
+
+            // Show results with smooth scroll
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+            // Add celebration effect
+            celebrate();
+        }
+
+        // Celebration fireworks
+        function celebrate() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.style.cssText = `
+                        position: fixed;
+                        width: 8px; height: 8px;
+                        background: linear-gradient(45deg, #ff6b6b, #feca57);
+                        border-radius: 50%;
+                        left: ${Math.random() * 100}vw;
+                        top: 20vh;
+                        animation: celebrationFirework 2s ease-out forwards;
+                        z-index: 1000;
+                        pointer-events: none;
+                    `;
+                    document.body.appendChild(firework);
+                    
+                    setTimeout(() => firework.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        // Add celebration CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes celebrationFirework {
+                0% { 
+                    transform: scale(0) translateY(0); 
+                    opacity: 1; 
+                }
+                100% { 
+                    transform: scale(1) translateY(-80vh); 
+                    opacity: 0; 
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
